@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trading Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0d0d0d;
+            color: #e0e0e0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 700px;
+            width: 100%;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #2196f3, #00c853);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            color: #888;
+            margin-bottom: 50px;
+            font-size: 1.1rem;
+        }
+
+        .menu-grid {
+            display: grid;
+            gap: 25px;
+        }
+
+        .menu-card {
+            background: linear-gradient(145deg, #1a1a1a, #1e1e1e);
+            border: 1px solid #2a2a2a;
+            border-radius: 20px;
+            padding: 35px 30px;
+            text-decoration: none;
+            color: #e0e0e0;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .menu-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #2196f3, #1976d2);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .menu-card:hover::before {
+            opacity: 1;
+        }
+
+        .menu-card:hover {
+            border-color: #2196f3;
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(33, 150, 243, 0.15);
+        }
+
+        .menu-card.calendar::before {
+            background: linear-gradient(90deg, #00c853, #009624);
+        }
+
+        .menu-card.calendar:hover {
+            border-color: #00c853;
+            box-shadow: 0 15px 40px rgba(0, 200, 83, 0.15);
+        }
+
+        .menu-card .icon {
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 16px;
+            flex-shrink: 0;
+        }
+
+        .menu-card .icon svg {
+            width: 45px;
+            height: 45px;
+        }
+
+        .menu-card .content {
+            text-align: left;
+        }
+
+        .menu-card h2 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        .menu-card p {
+            color: #888;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        .menu-card .arrow {
+            margin-left: auto;
+            color: #555;
+            font-size: 1.5rem;
+            transition: all 0.3s;
+        }
+
+        .menu-card:hover .arrow {
+            color: #2196f3;
+            transform: translateX(5px);
+        }
+
+        .menu-card.calendar:hover .arrow {
+            color: #00c853;
+        }
+
+        .external-links {
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid #2a2a2a;
+        }
+
+        .external-links h3 {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .link-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            color: #e0e0e0;
+            padding: 12px 25px;
+            border-radius: 10px;
+            text-decoration: none;
+            margin: 5px;
+            transition: all 0.3s;
+            font-size: 0.95rem;
+        }
+
+        .link-btn:hover {
+            background: #242424;
+            border-color: #2196f3;
+        }
+
+        .link-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .footer {
+            margin-top: 40px;
+            color: #555;
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 600px) {
+            h1 { font-size: 2rem; }
+            .menu-card {
+                flex-direction: column;
+                text-align: center;
+                padding: 25px 20px;
+            }
+            .menu-card .content { text-align: center; }
+            .menu-card .arrow { display: none; }
+            .menu-card .icon { width: 70px; height: 70px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Trading Dashboard</h1>
+        <p class="subtitle">Your personal trading command center</p>
+
+        <div class="menu-grid">
+            <a href="journal.html" class="menu-card">
+                <div class="icon" style="background: linear-gradient(135deg, #1565c0, #0d47a1);">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2">
+                        <path d="M3 3v18h18"/>
+                        <path d="M7 16l4-4 4 4 5-6"/>
+                        <circle cx="20" cy="8" r="2" fill="#00c853"/>
+                    </svg>
+                </div>
+                <div class="content">
+                    <h2>Trading Journal</h2>
+                    <p>Track your trades, analyze performance, and review your trading history</p>
+                </div>
+                <span class="arrow">→</span>
+            </a>
+
+            <a href="calendar.html" class="menu-card calendar">
+                <div class="icon" style="background: linear-gradient(135deg, #009624, #006400);">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2">
+                        <rect x="3" y="4" width="18" height="18" rx="2"/>
+                        <line x1="3" y1="10" x2="21" y2="10"/>
+                        <line x1="9" y1="2" x2="9" y2="6"/>
+                        <line x1="15" y1="2" x2="15" y2="6"/>
+                        <circle cx="8" cy="15" r="1" fill="#2196f3"/>
+                        <circle cx="12" cy="15" r="1" fill="#2196f3"/>
+                        <circle cx="16" cy="15" r="1" fill="#2196f3"/>
+                    </svg>
+                </div>
+                <div class="content">
+                    <h2>Calendar</h2>
+                    <p>View your trading activity by date and track important events</p>
+                </div>
+                <span class="arrow">→</span>
+            </a>
+        </div>
+
+        <div class="external-links">
+            <h3>Quick Links</h3>
+            <a href="https://www.forexfactory.com/calendar" target="_blank" class="link-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="2" y1="12" x2="22" y2="12"/>
+                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                </svg>
+                Forex Factory News
+            </a>
+        </div>
+
+        <p class="footer">Data saved locally in your browser</p>
+    </div>
+</body>
+</html>
