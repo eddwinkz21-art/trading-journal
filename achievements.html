@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Achievement Badges</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg:#0a0a0a; --card:#1a1a1a; --text:#e0e0e0; --text2:#888; --border:#333; --accent:#2196f3; --silver:#c0c0c0; --gold:#ffd700; --platinum:#e5e4e2; }
+        .theme-white { --bg:#f5f5f5; --card:#fff; --text:#111; --text2:#555; --border:#ddd; }
+        .theme-darkblue { --bg:#0a1628; --card:#1e3a5f; --text:#e0e0e0; --text2:#8ab4d8; --border:#2a4a7a; }
+        .theme-purple { --bg:#1a0a2e; --card:#3d2b5e; --text:#e8d5f5; --text2:#b794d4; --border:#4a2c7a; }
+        .theme-darkred { --bg:#1a0505; --card:#3d1212; --text:#ffe6e6; --text2:#a87b7b; --border:#5c1a1a; }
+        .theme-darkbrown { --bg:#1e120e; --card:#4a2d22; --text:#e8dcd4; --text2:#a89480; --border:#5c3a26; }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; padding:20px; }
+        .container { max-width:1200px; margin:0 auto; }
+        .header { display:flex; justify-content:space-between; align-items:center; margin-bottom:30px; }
+        h1 { font-size:1.8rem; font-weight:700; }
+        .back-btn { background:var(--card); color:var(--text); text-decoration:none; padding:10px 18px; border-radius:8px; border:1px solid var(--border); transition:all 0.3s; }
+        .back-btn:hover { transform:translateY(-2px); box-shadow:0 5px 15px rgba(0,0,0,0.3); }
+        
+        .tiers-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:25px; margin-top:20px; }
+        .tier-column { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:25px; }
+        .tier-header { text-align:center; padding-bottom:15px; border-bottom:1px solid var(--border); margin-bottom:20px; }
+        .tier-header.silver { color:var(--silver); }
+        .tier-header.gold { color:var(--gold); }
+        .tier-header.platinum { color:var(--platinum); }
+        .tier-header h2 { font-size:1.3rem; margin-bottom:5px; }
+        .tier-header p { color:var(--text2); font-size:0.85rem; }
+        
+        .badge-list { display:flex; flex-direction:column; gap:15px; }
+        .badge-item {
+            background:var(--bg); border:1px solid var(--border); border-radius:10px;
+            padding:15px; display:flex; align-items:center; gap:12px; transition:all 0.2s;
+        }
+        .badge-item.locked { opacity:0.6; }
+        .badge-item:hover:not(.locked) { transform:translateX(5px); border-color:var(--accent); }
+        .badge-icon {
+            width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+            font-size:1.2rem; flex-shrink:0;
+        }
+        .badge-icon.silver { background:var(--silver); color:#000; }
+        .badge-icon.gold { background:var(--gold); color:#000; }
+        .badge-icon.platinum { background:var(--platinum); color:#000; }
+        .badge-icon.locked { background:var(--border); color:var(--text2); }
+        .badge-info h4 { font-size:0.95rem; margin-bottom:3px; }
+        .badge-info p { font-size:0.8rem; color:var(--text2); }
+        .badge-progress { margin-top:8px; height:4px; background:var(--border); border-radius:2px; overflow:hidden; }
+        .badge-progress-bar { height:100%; background:var(--accent); width:0%; transition:width 0.3s; }
+        
+        @media(max-width:900px) { .tiers-grid { grid-template-columns:1fr; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏆 Achievement Badges</h1>
+            <a href="index.html" class="back-btn">← Dashboard</a>
+        </div>
+        
+        <div class="tiers-grid">
+            <!-- Silver Tier -->
+            <div class="tier-column">
+                <div class="tier-header silver">
+                    <h2>🥈 Silver</h2>
+                    <p>Beginner milestones</p>
+                </div>
+                <div class="badge-list">
+                    <div class="badge-item">
+                        <div class="badge-icon silver">🎯</div>
+                        <div class="badge-info">
+                            <h4>First Trade</h4>
+                            <p>Log your first trade in the journal</p>
+                            <div class="badge-progress"><div class="badge-progress-bar" style="width:100%"></div></div>
+                        </div>
+                    </div>
+                    <div class="badge-item locked">
+                        <div class="badge-icon locked">🔒</div>
+                        <div class="badge-info">
+                            <h4>Week Warrior</h4>
+                            <p>Trade 5 days in a row</p>
+                            <div class="badge-progress"><div class="badge-progress-bar" style="width:40%"></div></div>
+                        </div>
+                    </div>
+                    <div class="badge-item locked">
+                        <div class="badge-icon locked">🔒</div>
+                        <div class="badge-info">
+                            <h4>Rule Follower</h4>
+                            <p>Follow all rules for 7 days</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Gold Tier -->
+            <div class="tier-column">
+                <div class="tier-header gold">
+                    <h2>🥇 Gold</h2>
+                    <p>Intermediate achievements</p>
+                </div>
+                <div class="badge-list">
+                    <div class="badge-item locked">
+                        <div class="badge-icon locked">🔒</div>
+                        <div class="badge-info">
+                            <h4>Profit Master</h4>
+                            <p>Achieve $1,000 total profit</p>
+                        </div>
+                    </div>
+                    <div class="badge-item locked">
+                        <div class="badge-icon locked">🔒</div>
+                        <div class="badge-info">
+                            <h4>Consistency King</h4>
+                            <p>Positive P/L for 4 weeks straight</p>
+                        </div>
+                    </div>
+                    <div class="badge-item locked">
+                        <div class="badge-icon locked">🔒</div>
+                        <div class="badge-info">
+                            <h4>Prop Firm Grad</h4>
+                            <p>Pass your first evaluation</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Platinum Tier -->
+            <div class="tier-column">
+                <div class="tier-header platinum">
+                    <h2>💎 Platinum</h2>
+                    <p>Elite trader status</p>
+                </div>
+                <div class="badge-list">
+                    <div class="badge-item locked">
+                        <div class="badge-icon locked">🔒</div>
+                        <div class="badge-info">
+                            <h4>Drawdown Defender</h4>
+                            <p>Never breach drawdown in 30 days</p>
+                        </div>
+                    </div>
+                    <div class="badge-item locked">
+                        <div class="badge-icon locked">🔒</div>
+                        <div class="badge-info">
+                            <h4>Perfect Week</h4>
+                            <p>100% win rate for a full week</p>
+                        </div>
+                    </div>
+                    <div class="badge-item locked">
+                        <div class="badge-icon locked">🔒</div>
+                        <div class="badge-info">
+                            <h4>Legend Status</h4>
+                            <p>Unlock all Silver & Gold badges</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const savedTheme = localStorage.getItem('theme') || 'black';
+        document.body.className = 'theme-' + savedTheme;
+    </script>
+</body>
+</html>
