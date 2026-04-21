@@ -28,16 +28,17 @@
         .back-btn { background:var(--bg-secondary); color:var(--text-primary); text-decoration:none; padding:10px 20px; border-radius:8px; border:1px solid var(--border-color); transition:all 0.3s; }
         .back-btn:hover { transform:translateY(-2px); box-shadow:0 5px 15px rgba(0,0,0,0.3); }
         .stats-row { display:grid; grid-template-columns:repeat(3,1fr); gap:15px; margin-bottom:25px; }
-        .stat-card { background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:12px; padding:15px; text-align:center; }
+        .stat-card { background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:12px; padding:15px; text-align:center; transition:all 0.3s; }
+        .stat-card:hover { transform:translateY(-3px); box-shadow:0 6px 20px rgba(0,0,0,0.25); }
         .stat-card h3 { color:var(--text-secondary); font-size:0.7rem; margin-bottom:6px; text-transform:uppercase; }
         .stat-card .value { font-size:1.3rem; font-weight:700; }
         .stat-card.profit .value { color:var(--accent-green); }
         .stat-card.loss .value { color:var(--accent-red); }
         .form-card { background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:16px; padding:25px; margin-bottom:25px; }
-        .form-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(200px,1fr)); gap:15px; margin-top:15px; }
+        .form-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:15px; margin-top:15px; }
         .form-group { display:flex; flex-direction:column; gap:6px; }
         .form-group label { font-size:0.75rem; font-weight:600; color:var(--text-secondary); text-transform:uppercase; }
-        .form-group input, .form-group select, .form-group textarea { background:var(--bg-primary); border:1px solid var(--border-color); color:var(--text-primary); padding:10px; border-radius:8px; font-size:0.9rem; font-family:inherit; }
+        .form-group input, .form-group select, .form-group textarea { background:var(--bg-primary); border:1px solid var(--border-color); color:var(--text-primary); padding:10px; border-radius:8px; font-size:0.9rem; font-family:inherit; transition:border-color 0.3s; }
         .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline:none; border-color:var(--accent-blue); }
         .form-group textarea { resize:vertical; min-height:60px; }
         .section-title { color:var(--accent-blue); font-size:0.85rem; margin:20px 0 10px; padding-bottom:5px; border-bottom:1px solid var(--border-color); font-weight:600; }
@@ -65,15 +66,14 @@
         .sess-lon { background:linear-gradient(135deg,#1a237e,#283593); color:#fff; }
         .sess-asi { background:linear-gradient(135deg,#b71c1c,#c62828); color:#fff; }
         
-        /* FIXED MODAL STYLES */
+        /* FIXED MODAL */
         .modal-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:2000; justify-content:center; align-items:center; padding:20px; backdrop-filter:blur(4px); }
         .modal-overlay.active { display:flex; }
-        .modal { background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:16px; padding:25px; max-width:650px; width:100%; max-height:85vh; overflow-y:auto; animation:modalSlide 0.3s ease forwards; position:relative; }
+        .modal { background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:16px; padding:25px; max-width:650px; width:100%; max-height:85vh; overflow-y:auto; animation:modalSlide 0.3s ease forwards; }
         @keyframes modalSlide { from { opacity:0; transform:translateY(-20px);} to { opacity:1; transform:translateY(0);} }
         .modal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; padding-bottom:15px; border-bottom:1px solid var(--border-color); }
         .close-btn { background:var(--bg-card); border:1px solid var(--border-color); color:var(--text-primary); width:35px; height:35px; border-radius:50%; cursor:pointer; font-size:1.3rem; transition:all 0.3s; }
         .close-btn:hover { background:var(--accent-red); color:#fff; transform:rotate(90deg); }
-        
         .zoom-modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:3000; justify-content:center; align-items:center; padding:20px; }
         .zoom-modal.active { display:flex; }
         .zoom-modal img { max-width:90%; max-height:90%; border-radius:12px; transition:transform 0.3s; }
@@ -158,7 +158,7 @@
         </div>
     </div>
 
-    <!-- FIXED MODAL STRUCTURE -->
+    <!-- FIXED MODAL -->
     <div class="modal-overlay" id="tradeModal">
         <div class="modal">
             <div class="modal-header">
@@ -193,11 +193,7 @@
         function loadAccounts() {
             const select = document.getElementById('accountSelect');
             select.innerHTML = '<option value="">-- Choose Active Account --</option>';
-            if (activeAccounts.length === 0) {
-                document.getElementById('noAccountsMsg').style.display = 'block';
-                document.getElementById('addTradeBtn').disabled = true;
-                return;
-            }
+            if (activeAccounts.length === 0) { document.getElementById('noAccountsMsg').style.display = 'block'; document.getElementById('addTradeBtn').disabled = true; return; }
             document.getElementById('noAccountsMsg').style.display = 'none';
             document.getElementById('addTradeBtn').disabled = false;
             activeAccounts.forEach(acc => {
@@ -275,32 +271,17 @@
             return violations;
         }
 
-        function syncAccountBalance(accountId) {
-            let accs = JSON.parse(localStorage.getItem('propfirms')) || [];
-            let acc = accs.find(a => a.id === accountId); if (!acc) return;
-            let accTrades = trades.filter(t => t.accountId === accountId);
-            let totalPL = accTrades.reduce((sum, t) => sum + parseFloat(t.profitLoss || 0), 0);
-            let startBalance = parseFloat(acc.size) || 0;
-            let currentBalance = startBalance + totalPL;
-            let maxDD = parseFloat(acc.maxDrawdown) || 0;
-            let ddLimit = (maxDD / 100) * startBalance;
-            
-            if (startBalance - currentBalance > ddLimit) acc.status = 'failed';
-            acc.currentBalance = currentBalance;
-            localStorage.setItem('propfirms', JSON.stringify(accs));
-        }
-
         function addTrade() {
             const accId = document.getElementById('accountSelect').value;
             if (!accId) { alert('Please select an account.'); return; }
             const trade = {
-                id: Date.now().toString(), accountId: accId,
-                date: document.getElementById('tradeDate').value, symbol: document.getElementById('symbol').value,
-                tier: document.getElementById('tier').value, tradeHour: document.getElementById('tradeHour').value,
-                duration: document.getElementById('duration').value, session: document.getElementById('session').value,
-                type: document.getElementById('type').value, riskAmount: document.getElementById('riskAmount').value,
-                profitLoss: document.getElementById('profitLoss').value, rr: document.getElementById('rr').value,
-                confirmations: document.getElementById('confirmations').value, improvements: document.getElementById('improvements').value,
+                id: Date.now().toString(), accountId: accId, date: document.getElementById('tradeDate').value,
+                symbol: document.getElementById('symbol').value, tier: document.getElementById('tier').value,
+                tradeHour: document.getElementById('tradeHour').value, duration: document.getElementById('duration').value,
+                session: document.getElementById('session').value, type: document.getElementById('type').value,
+                riskAmount: document.getElementById('riskAmount').value, profitLoss: document.getElementById('profitLoss').value,
+                rr: document.getElementById('rr').value, confirmations: document.getElementById('confirmations').value,
+                improvements: document.getElementById('improvements').value,
                 tradeImage: document.getElementById('tradeImgPreview').src || null, proofImage: document.getElementById('proofImgPreview').src || null,
                 accountSize: activeAccounts.find(a=>a.id===accId)?.size || 0, violations: []
             };
@@ -314,7 +295,16 @@
 
             trades.push(trade);
             localStorage.setItem('trades', JSON.stringify(trades));
-            syncAccountBalance(accId); // AUTO-UPDATE PROP FIRMS
+            // Sync propfirms balance
+            let accs = JSON.parse(localStorage.getItem('propfirms')) || [];
+            let acc = accs.find(a => a.id === accId);
+            if (acc) {
+                let accTrades = trades.filter(t => t.accountId === accId);
+                let totalPL = accTrades.reduce((s, t) => s + parseFloat(t.profitLoss || 0), 0);
+                acc.currentBalance = parseFloat(acc.size) + totalPL;
+                if (parseFloat(acc.size) - acc.currentBalance > (parseFloat(acc.maxDrawdown)/100)*parseFloat(acc.size)) acc.status = 'failed';
+                localStorage.setItem('propfirms', JSON.stringify(accs));
+            }
             renderTable(); updateStats(); loadAccounts();
             ['tradeHour','riskAmount','profitLoss','rr','confirmations','improvements'].forEach(id => document.getElementById(id).value = '');
             document.getElementById('tradeImgPreview').src = ''; document.getElementById('tradeImgArea').classList.remove('has-image');
