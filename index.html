@@ -239,6 +239,7 @@
                 <div style="display:flex; align-items:center; gap:8px; margin-bottom:2px;">
                     <div class="feature-icon" style="width:32px;height:32px;font-size:1.1rem;margin:0;">📊</div>
                     <h3 style="margin:0;font-size:1rem;">Market Sentiment</h3>
+                    <span id="price-timer" style="margin-left:auto; font-size:0.75rem; color:var(--accent-blue); font-family:monospace; background:var(--bg-secondary); padding:3px 8px; border-radius:6px; border:1px solid var(--border-color);">⏱️ 60s</span>
                 </div>
                 <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px;">
                     <div style="display:flex; flex-direction:column; align-items:center; padding:10px 8px; border:1px solid var(--border-color); border-radius:8px; background:var(--bg-secondary);">
@@ -320,7 +321,6 @@
         setInterval(updateSessions, 60000);
         
         // 🔥 REAL-TIME MARKET PRICES USING FREE APIs 🔥
-        // CORS proxy for browser requests
         const CORS_PROXY = 'https://api.allorigins.win/raw?url=';
         
         function formatPrice(price, decimals = 2) {
@@ -334,7 +334,6 @@
             el.className = `sentiment-change ${isUp ? 'up' : 'down'}`;
         }
         
-        // Fetch Bitcoin from CoinGecko (free, no key, CORS-friendly)
         async function fetchBitcoin() {
             try {
                 const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true');
@@ -351,14 +350,11 @@
             }
         }
         
-        // Fetch Nasdaq & Gold via CORS proxy + Yahoo Finance (unofficial)
         async function fetchNasdaqGold() {
             try {
-                // Using a public CORS proxy to fetch Yahoo Finance data
                 const nasdaqUrl = encodeURIComponent('https://query1.finance.yahoo.com/v8/finance/chart/IXIC?range=1d&interval=1m');
                 const goldUrl = encodeURIComponent('https://query1.finance.yahoo.com/v8/finance/chart/GC=F?range=1d&interval=1m');
                 
-                // Nasdaq
                 const nasdaqRes = await fetch(CORS_PROXY + nasdaqUrl);
                 const nasdaqData = await nasdaqRes.json();
                 const nasdaqMeta = nasdaqData.chart.result[0].meta;
@@ -369,7 +365,6 @@
                 document.getElementById('nasdaq-price').textContent = formatPrice(nasdaqPrice);
                 updateChange('nasdaq-change', nasdaqChange);
                 
-                // Gold
                 const goldRes = await fetch(CORS_PROXY + goldUrl);
                 const goldData = await goldRes.json();
                 const goldMeta = goldData.chart.result[0].meta;
@@ -382,7 +377,6 @@
                 
             } catch(e) {
                 console.warn('Nasdaq/Gold fetch failed, using fallback:', e);
-                // Fallback values if API fails
                 document.getElementById('nasdaq-price').textContent = '$24,836.60';
                 document.getElementById('nasdaq-change').textContent = '+1.63%';
                 document.getElementById('nasdaq-change').className = 'sentiment-change up';
@@ -392,17 +386,26 @@
             }
         }
         
-        // Main update function
         async function updateMarketPrices() {
-            await Promise.all([
-                fetchBitcoin(),
-                fetchNasdaqGold()
-            ]);
+            await Promise.all([fetchBitcoin(), fetchNasdaqGold()]);
         }
+
+        // ⏱️ 60-SECOND COUNTDOWN TIMER (Syncs with price updates)
+        let countdown = 60;
+        const timerEl = document.getElementById('price-timer');
         
-        // Initial load + update every 60 seconds
-        updateMarketPrices();
-        setInterval(updateMarketPrices, 60000);
+        function startCountdown() {
+            timerEl.textContent = `⏱️ ${countdown}s`;
+            setInterval(() => {
+                countdown--;
+                if (countdown < 1) {
+                    countdown = 60;
+                    updateMarketPrices(); // Fetch fresh data at 0
+                }
+                timerEl.textContent = `⏱️ ${countdown}s`;
+            }, 1000);
+        }
+        startCountdown();
         
         // Reset All Data (Double Confirmation)
         function clearAllData() {
