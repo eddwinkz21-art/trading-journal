@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gym & Fitness</title>
+    <title>Gym Dashboard</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -29,7 +29,7 @@
             transition: all 0.3s ease;
         }
 
-        /* Different Header Style */
+        /* Header */
         .header {
             display: flex;
             justify-content: space-between;
@@ -43,7 +43,7 @@
             font-weight: 800;
             background: linear-gradient(to right, var(--accent-primary), var(--accent-secondary));
             -webkit-background-clip: text;
-            background-clip: text; /* ✅ Added standard property for compatibility */
+            background-clip: text;
             -webkit-text-fill-color: transparent;
             letter-spacing: -1px;
         }
@@ -89,7 +89,7 @@
             margin-bottom: 30px;
         }
 
-        /* Different Square Styles */
+        /* Cards */
         .card {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -104,71 +104,65 @@
             box-shadow: 0 12px 30px rgba(0, 255, 136, 0.05);
             border-color: var(--accent-primary);
         }
-
         .card h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
         .card p { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.5; }
 
-        /* Specific Card Variations */
-        .card.today-workout {
-            grid-column: span 2;
-            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
-            border-color: var(--accent-primary);
+        /* Shining Weight History Card */
+        @keyframes shine-pulse {
+            0%, 100% { box-shadow: 0 0 8px rgba(0, 184, 255, 0.3); border-color: rgba(0, 184, 255, 0.4); }
+            50% { box-shadow: 0 0 20px rgba(0, 184, 255, 0.6), 0 0 35px rgba(0, 184, 255, 0.2); border-color: var(--accent-secondary); }
         }
-        .card.today-workout::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--accent-primary);
-        }
-        .workout-exercises { margin-top: 15px; }
-        .exercise-item {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.95rem;
-        }
-        .exercise-item:last-child { border-bottom: none; }
-        .sets-reps { color: var(--accent-secondary); font-weight: 600; font-size: 0.85rem; }
+        .shining-card { animation: shine-pulse 2.5s ease-in-out infinite; cursor: pointer; }
 
-        .card.action-square {
-            display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; cursor: pointer; min-height: 180px;
-        }
-        .action-icon {
-            width: 60px; height: 60px; border-radius: 50%; background: rgba(0, 255, 136, 0.1);
-            display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin-bottom: 15px;
-            transition: all 0.3s;
-        }
-        .card.action-square:hover .action-icon { background: var(--accent-primary); color: #000; transform: scale(1.1); }
+        /* Goals Grid */
+        .goal-row { display: flex; gap: 10px; align-items: center; padding: 10px 0; border-bottom: 1px solid #222; flex-wrap: wrap; }
+        .goal-row:last-child { border-bottom: none; }
+        .goal-input { background: #252525; border: 1px solid #333; color: #fff; padding: 6px 10px; border-radius: 6px; font-size: 0.9rem; width: 80px; transition: 0.2s; }
+        .goal-input:focus { outline: none; border-color: var(--accent-primary); }
+        .goal-input.name { flex: 1; min-width: 110px; width: 100%; }
+        .goal-checkbox { width: 20px; height: 20px; accent-color: var(--accent-primary); cursor: pointer; margin-left: 8px; }
+        .goal-label { font-size: 0.75rem; color: var(--text-secondary); display: block; margin-bottom: 4px; }
+        .goal-wrap { display: flex; flex-direction: column; }
 
-        .card.progress-bar { padding-bottom: 15px; }
-        .progress-track { width: 100%; height: 8px; background: #333; border-radius: 4px; margin-top: 12px; overflow: hidden; }
-        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary)); border-radius: 4px; }
-        .progress-label { display: flex; justify-content: space-between; font-size: 0.85rem; margin-top: 8px; color: var(--text-secondary); }
+        /* Modals */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(4px); }
+        .modal.active { display: flex; }
+        .modal-content { background: var(--card-bg); padding: 30px; border-radius: 16px; width: 90%; max-width: 460px; max-height: 85vh; overflow-y: auto; border: 1px solid var(--accent-secondary); position: relative; }
+        .modal-close { position: absolute; top: 15px; right: 15px; background: none; border: none; color: var(--text-secondary); font-size: 1.5rem; cursor: pointer; }
+        .modal-close:hover { color: #fff; }
+        
+        .weight-entry { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: #252525; border-radius: 8px; margin-bottom: 10px; }
+        .weight-date { font-size: 0.8rem; color: var(--text-secondary); }
+        .weight-val { font-weight: 700; color: var(--accent-primary); margin: 4px 0; }
+        .edit-btn { background: transparent; border: 1px solid #444; color: #aaa; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; cursor: pointer; }
+        .edit-btn:hover { border-color: var(--accent-primary); color: var(--accent-primary); }
 
-        .card.chart-placeholder {
-            display: flex; align-items: flex-end; justify-content: space-between; gap: 10px; height: 150px; padding-bottom: 20px;
-        }
-        .chart-bar {
-            width: 100%; background: var(--accent-secondary); border-radius: 4px; opacity: 0.7; transition: height 0.5s ease;
-        }
-        .chart-bar:hover { opacity: 1; }
+        .add-weight-form { display: flex; gap: 10px; margin-bottom: 20px; }
+        .add-weight-form input { flex: 1; background: #252525; border: 1px solid #333; color: #fff; padding: 10px; border-radius: 8px; }
+        .btn-primary { background: var(--accent-primary); color: #000; border: none; padding: 10px 16px; border-radius: 8px; font-weight: 700; cursor: pointer; }
+        .btn-primary:hover { opacity: 0.9; }
 
         @media (max-width: 900px) {
-            .card.today-workout { grid-column: span 1; }
+            .goals-card { grid-column: span 1 !important; }
         }
     </style>
 </head>
 <body>
     <div class="header">
-        <h1>🏋️‍♂️ GYM MODE</h1>
+        <h1>🏋️‍♂️ GYM Dashboard</h1>
         <a href="index.html" class="back-btn">← Trading</a>
     </div>
 
     <div class="stats-row">
-        <div class="stat-pill"><span>Weight</span><span>185.5 lbs</span></div>
-        <div class="stat-pill"><span>Streak</span><span>🔥 12 Days</span></div>
+        <div class="stat-pill"><span>Current BW</span><span id="stat-bw">-- KG</span></div>
+        <div class="stat-pill"><span>Streak</span><span>🔥 0 Days</span></div>
         <div class="stat-pill"><span>Calories</span><span>2,450</span></div>
         <div class="stat-pill"><span>Water</span><span>3.2 L</span></div>
     </div>
 
     <div class="gym-grid">
         <!-- Main Workout Card -->
-        <div class="card today-workout">
+        <div class="card today-workout" style="grid-column: span 2;">
             <h3>📅 Today's Workout: <span style="color:var(--accent-primary)">Push Day</span></h3>
             <p>Focus: Chest, Shoulders, Triceps</p>
             <div class="workout-exercises">
@@ -194,37 +188,13 @@
             <p>Start 60s / 90s / 120s timer</p>
         </div>
 
-        <div class="card action-square">
-            <div class="action-icon">📸</div>
-            <h3 style="font-size:1rem;">Body Pic</h3>
-            <p>Update progress photos</p>
+        <!-- Editable Monthly Goals -->
+        <div class="card goals-card" style="grid-column: span 2;">
+            <h3>🎯 Monthly Goals (KG)</h3>
+            <div id="goals-list"></div>
         </div>
 
-        <div class="card progress-bar">
-            <h3>🎯 Monthly Goal</h3>
-            <p>Bench Press: 225 lbs</p>
-            <div class="progress-track">
-                <div class="progress-fill" style="width: 75%;"></div>
-            </div>
-            <div class="progress-label">
-                <span>Current: 210 lbs</span>
-                <span>75%</span>
-            </div>
-        </div>
-
-        <div class="card">
-            <h3>📊 Weight History</h3>
-            <div class="chart-placeholder">
-                <div class="chart-bar" style="height: 40%;"></div>
-                <div class="chart-bar" style="height: 55%;"></div>
-                <div class="chart-bar" style="height: 45%;"></div>
-                <div class="chart-bar" style="height: 60%;"></div>
-                <div class="chart-bar" style="height: 70%;"></div>
-                <div class="chart-bar" style="height: 85%;"></div>
-                <div class="chart-bar" style="height: 90%;"></div>
-            </div>
-        </div>
-
+        <!-- Nutrition -->
         <div class="card">
             <h3>🥗 Nutrition</h3>
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-top:10px;">
@@ -247,6 +217,13 @@
             </div>
         </div>
 
+        <!-- Shining Weight History Card -->
+        <div class="card shining-card" id="weightHistoryCard" onclick="openWeightModal()">
+            <h3>⚖️ Weight History</h3>
+            <p>Track fasting weight & monitor progress</p>
+            <div id="weight-preview" style="margin-top:15px; font-weight:700; color:var(--accent-secondary); text-align:center;">Click to set your first weight...</div>
+        </div>
+
         <div class="card action-square">
             <div class="action-icon">📚</div>
             <h3 style="font-size:1rem;">Exercise Library</h3>
@@ -254,8 +231,186 @@
         </div>
     </div>
 
+    <!-- Weight History Modal -->
+    <div id="weightModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeWeightModal()">&times;</button>
+            <h3 id="modal-title" style="margin-bottom:20px;">⚖️ Weight Tracker</h3>
+            
+            <!-- First Time Setup View -->
+            <div id="setup-view" style="display:none; text-align:center;">
+                <p style="margin-bottom:15px; color:var(--text-secondary);">Welcome! Let's set your baseline fasting weight to track progress.</p>
+                <input type="number" id="initial-weight-input" placeholder="Enter weight in KG" style="width:100%; padding:12px; background:#252525; border:1px solid #333; color:#fff; border-radius:8px; font-size:1rem; margin-bottom:15px; text-align:center;">
+                <button class="btn-primary" onclick="saveInitialWeight()">Set Baseline & Continue</button>
+            </div>
+
+            <!-- History View -->
+            <div id="history-view" style="display:none;">
+                <div class="add-weight-form">
+                    <input type="number" id="new-weight-input" placeholder="Current fasting weight (KG)">
+                    <button class="btn-primary" onclick="addNewWeight()">Add</button>
+                </div>
+                <div id="weight-list"></div>
+            </div>
+        </div>
+    </div>
+
     <footer style="text-align:center; color:var(--text-secondary); font-size:0.8rem; margin-top:40px;">
-        <p>Gym Module v1.0 • Stay Consistent 💪</p>
+        <p>Gym Dashboard v1.0 • Stay Consistent 💪</p>
     </footer>
+
+    <script>
+        // ================= GOALS SYSTEM =================
+        const defaultGoals = [
+            { name: 'Bench Press', current: 180, target: 230, completed: false },
+            { name: 'Squat', current: 220, target: 270, completed: false },
+            { name: 'Deadlift', current: 260, target: 315, completed: false },
+            { name: 'Pull Up', current: 0, target: 20, completed: false }
+        ];
+
+        function loadGoals() {
+            const saved = localStorage.getItem('gymGoals');
+            const goals = saved ? JSON.parse(saved) : defaultGoals;
+            const container = document.getElementById('goals-list');
+            container.innerHTML = '';
+
+            goals.forEach((g, i) => {
+                const row = document.createElement('div');
+                row.className = 'goal-row';
+                row.innerHTML = `
+                    <div class="goal-wrap">
+                        <span class="goal-label">Exercise</span>
+                        <input class="goal-input name" value="${g.name}" data-idx="${i}" data-field="name" onchange="saveGoalField(this)">
+                    </div>
+                    <div class="goal-wrap">
+                        <span class="goal-label">Current (KG)</span>
+                        <input type="number" class="goal-input" value="${g.current}" data-idx="${i}" data-field="current" onchange="saveGoalField(this)">
+                    </div>
+                    <div class="goal-wrap">
+                        <span class="goal-label">Target (KG)</span>
+                        <input type="number" class="goal-input" value="${g.target}" data-idx="${i}" data-field="target" onchange="saveGoalField(this)">
+                    </div>
+                    <input type="checkbox" class="goal-checkbox" ${g.completed ? 'checked' : ''} data-idx="${i}" onchange="saveGoalField(this)">
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        function saveGoalField(el) {
+            const goals = JSON.parse(localStorage.getItem('gymGoals')) || defaultGoals;
+            const idx = el.dataset.idx;
+            const field = el.dataset.field;
+            
+            if (field) {
+                goals[idx][field] = el.type === 'number' ? parseFloat(el.value) || 0 : el.value;
+            } else {
+                goals[idx].completed = el.checked;
+            }
+            
+            localStorage.setItem('gymGoals', JSON.stringify(goals));
+        }
+
+        // ================= WEIGHT HISTORY SYSTEM =================
+        function openWeightModal() {
+            document.getElementById('weightModal').classList.add('active');
+            const history = JSON.parse(localStorage.getItem('gymWeightHistory')) || [];
+            const setupView = document.getElementById('setup-view');
+            const historyView = document.getElementById('history-view');
+            const modalTitle = document.getElementById('modal-title');
+
+            if (history.length === 0) {
+                setupView.style.display = 'block';
+                historyView.style.display = 'none';
+                modalTitle.textContent = '📊 Set Initial Baseline';
+            } else {
+                setupView.style.display = 'none';
+                historyView.style.display = 'block';
+                modalTitle.textContent = '📈 Weight Tracker';
+                renderWeightHistory(history);
+                updateWeightPreview(history);
+            }
+        }
+
+        function closeWeightModal() {
+            document.getElementById('weightModal').classList.remove('active');
+        }
+
+        function saveInitialWeight() {
+            const kg = parseFloat(document.getElementById('initial-weight-input').value);
+            if (!kg || kg < 30 || kg > 300) return alert('Please enter a valid weight (30-300 KG)');
+
+            const entry = { kg, date: new Date().toISOString() };
+            const history = [entry];
+            localStorage.setItem('gymWeightHistory', JSON.stringify(history));
+            
+            document.getElementById('initial-weight-input').value = '';
+            openWeightModal(); // Switch to history view
+        }
+
+        function addNewWeight() {
+            const kg = parseFloat(document.getElementById('new-weight-input').value);
+            if (!kg) return;
+
+            const history = JSON.parse(localStorage.getItem('gymWeightHistory')) || [];
+            history.unshift({ kg, date: new Date().toISOString() }); // Add to top
+            localStorage.setItem('gymWeightHistory', JSON.stringify(history));
+            document.getElementById('new-weight-input').value = '';
+            renderWeightHistory(history);
+            updateWeightPreview(history);
+        }
+
+        function renderWeightHistory(history) {
+            const list = document.getElementById('weight-list');
+            list.innerHTML = '';
+            
+            history.forEach((entry, i) => {
+                const dateObj = new Date(entry.date);
+                const dateStr = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                
+                const div = document.createElement('div');
+                div.className = 'weight-entry';
+                div.innerHTML = `
+                    <div>
+                        <div class="weight-date">${dateStr}</div>
+                        <div class="weight-val">${entry.kg} KG</div>
+                    </div>
+                    <button class="edit-btn" onclick="editWeight(${i})">Edit</button>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        function editWeight(index) {
+            const history = JSON.parse(localStorage.getItem('gymWeightHistory'));
+            const newKg = prompt('Edit weight (KG):', history[index].kg);
+            if (newKg && !isNaN(newKg) && newKg > 0) {
+                history[index].kg = parseFloat(newKg);
+                localStorage.setItem('gymWeightHistory', JSON.stringify(history));
+                renderWeightHistory(history);
+                updateWeightPreview(history);
+            }
+        }
+
+        function updateWeightPreview(history) {
+            const latest = history[0];
+            if (latest) {
+                const kgStr = `${latest.kg} KG`;
+                document.getElementById('stat-bw').textContent = kgStr;
+                document.getElementById('weight-preview').textContent = `Last: ${kgStr} on ${new Date(latest.date).toLocaleDateString('en-US', {month:'short', day:'numeric'})}`;
+            }
+        }
+
+        // Initialize on load
+        window.addEventListener('DOMContentLoaded', () => {
+            loadGoals();
+            const history = JSON.parse(localStorage.getItem('gymWeightHistory')) || [];
+            updateWeightPreview(history);
+        });
+
+        // Close modal on outside click
+        window.addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal')) closeWeightModal();
+        });
+    </script>
 </body>
 </html>
