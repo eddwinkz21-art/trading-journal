@@ -234,26 +234,30 @@
                 <div class="current-time" id="currentTime">--:-- EST</div>
             </div>
             
-            <div class="feature-card mid" style="display:flex; flex-direction:column; gap:10px; padding:16px 14px;">
+            <!-- Larger Market Sentiment Card (spans 2 columns on desktop) -->
+            <div class="feature-card mid" style="display:flex; flex-direction:column; gap:10px; padding:16px 14px; grid-column: span 2;" id="sentimentCard">
                 <div style="display:flex; align-items:center; gap:8px; margin-bottom:2px;">
                     <div class="feature-icon" style="width:32px;height:32px;font-size:1.1rem;margin:0;">📊</div>
                     <h3 style="margin:0;font-size:1rem;">Market Sentiment</h3>
                 </div>
-                <div style="display:grid; grid-template-columns:1fr; gap:8px;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; padding:6px 4px; border-bottom:1px solid var(--border-color);">
-                        <span style="font-size:0.8rem; color:var(--text-secondary);">📈 Nasdaq (NDX)</span>
-                        <span style="font-weight:600; font-size:0.9rem;" id="nasdaq-price">$--</span>
-                        <span style="font-weight:600; font-size:0.8rem; padding:2px 6px; border-radius:4px;" id="nasdaq-change" class="sentiment-change neutral">+0.00%</span>
+                <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px;">
+                    <div style="display:flex; flex-direction:column; align-items:center; padding:10px 8px; border:1px solid var(--border-color); border-radius:8px; background:var(--bg-secondary);">
+                        <span style="font-size:1.3rem; margin-bottom:4px;">📈</span>
+                        <span style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:6px; text-align:center;">Nasdaq (NDX)</span>
+                        <span style="font-weight:700; font-size:1.1rem; margin-bottom:4px;" id="nasdaq-price">$24,836.00</span>
+                        <span style="font-weight:600; font-size:0.85rem; padding:3px 10px; border-radius:6px;" id="nasdaq-change" class="sentiment-change up">+0.42%</span>
                     </div>
-                    <div style="display:flex; justify-content:space-between; align-items:center; padding:6px 4px;">
-                        <span style="font-size:0.8rem; color:var(--text-secondary);">₿ Bitcoin (BTC)</span>
-                        <span style="font-weight:600; font-size:0.9rem;">$69,850</span>
-                        <span class="sentiment-change up">+2.85%</span>
+                    <div style="display:flex; flex-direction:column; align-items:center; padding:10px 8px; border:1px solid var(--border-color); border-radius:8px; background:var(--bg-secondary);">
+                        <span style="font-size:1.3rem; margin-bottom:4px;">₿</span>
+                        <span style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:6px; text-align:center;">Bitcoin (BTC)</span>
+                        <span style="font-weight:700; font-size:1.1rem; margin-bottom:4px;" id="btc-price">$66,608.00</span>
+                        <span style="font-weight:600; font-size:0.85rem; padding:3px 10px; border-radius:6px;" id="btc-change" class="sentiment-change up">+1.24%</span>
                     </div>
-                    <div style="display:flex; justify-content:space-between; align-items:center; padding:6px 4px;">
-                        <span style="font-size:0.8rem; color:var(--text-secondary);">🥇 Gold (XAU)</span>
-                        <span style="font-weight:600; font-size:0.9rem;">$2,385.40</span>
-                        <span class="sentiment-change up">+0.65%</span>
+                    <div style="display:flex; flex-direction:column; align-items:center; padding:10px 8px; border:1px solid var(--border-color); border-radius:8px; background:var(--bg-secondary);">
+                        <span style="font-size:1.3rem; margin-bottom:4px;">🥇</span>
+                        <span style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:6px; text-align:center;">Gold (XAU)</span>
+                        <span style="font-weight:700; font-size:1.1rem; margin-bottom:4px;" id="gold-price">$2,385.40</span>
+                        <span style="font-weight:600; font-size:0.85rem; padding:3px 10px; border-radius:6px;" id="gold-change" class="sentiment-change up">+0.18%</span>
                     </div>
                 </div>
             </div>
@@ -315,33 +319,52 @@
         updateSessions();
         setInterval(updateSessions, 60000);
         
-        // Nasdaq Daily % Change (same-day open)
-        async function updateNasdaqSentiment() {
-            try {
-                // 🔌 REPLACE WITH REAL API LATER:
-                // const res = await fetch('YOUR_NASDAQ_API');
-                // const data = await res.json();
-                // const current = data.price;
-                // const open = data.dayOpen;
+        // Market Prices Auto-Update (simulated realistic fluctuations every 30s)
+        const marketData = {
+            nasdaq: { base: 24836.00, change: 0.42 },
+            btc: { base: 66608.00, change: 1.24 },
+            gold: { base: 2385.40, change: 0.18 }
+        };
 
-                // Mock data for testing
-                const current = 18432.50;
-                const open = 18380.20;
-
-                const change = ((current - open) / open * 100).toFixed(2);
-                const isUp = change >= 0;
-
-                document.getElementById('nasdaq-price').textContent = `$${current.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2})}`;
-                
-                const changeEl = document.getElementById('nasdaq-change');
-                changeEl.textContent = `${isUp ? '+' : ''}${change}%`;
-                changeEl.className = `sentiment-change ${isUp ? 'up' : 'down'}`;
-            } catch(e) {
-                console.warn('Nasdaq update failed:', e);
-            }
+        function formatPrice(price) {
+            return '$' + price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         }
-        updateNasdaqSentiment();
-        setInterval(updateNasdaqSentiment, 30000);
+
+        function updateMarketPrices() {
+            // Simulate small realistic fluctuations (-0.15% to +0.15%)
+            ['nasdaq', 'btc', 'gold'].forEach(key => {
+                const data = marketData[key];
+                const fluctuation = (Math.random() - 0.5) * 0.3; // ±0.15%
+                const newChange = Math.max(-2.5, Math.min(2.5, data.change + fluctuation)); // Keep within ±2.5%
+                const newPrice = data.base * (1 + newChange / 100);
+                
+                // Update DOM
+                document.getElementById(`${key}-price`).textContent = formatPrice(newPrice);
+                
+                const changeEl = document.getElementById(`${key}-change`);
+                changeEl.textContent = `${newChange >= 0 ? '+' : ''}${newChange.toFixed(2)}%`;
+                changeEl.className = `sentiment-change ${newChange >= 0 ? 'up' : 'down'}`;
+                
+                // Store for next update
+                data.change = newChange;
+            });
+        }
+
+        // Initial load + update every 30 seconds
+        updateMarketPrices();
+        setInterval(updateMarketPrices, 30000);
+        
+        // 🔌 TO USE REAL API DATA:
+        // Replace updateMarketPrices() with:
+        /*
+        async function updateMarketPrices() {
+            try {
+                const res = await fetch('YOUR_API_ENDPOINT');
+                const data = await res.json();
+                // Update elements with data.nasdaq, data.btc, data.gold
+            } catch(e) { console.warn('API failed, using fallback'); }
+        }
+        */
         
         // Reset All Data (Double Confirmation)
         function clearAllData() {
