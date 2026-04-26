@@ -141,7 +141,7 @@
         .footer a { color: var(--accent-blue); text-decoration: none; font-weight: 600; }
         
         .action-buttons {
-            position: fixed; bottom: 20px; left: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 100;
+            position: fixed; bottom: 20px; left: 20px; display: flex; flex-direction: column; gap: 12px; z-index: 100;
         }
         .shop-btn {
             background: linear-gradient(135deg, #ffd700, #ffed4e); color: #000;
@@ -154,14 +154,16 @@
         .shop-btn:hover { transform: translateY(-2px) scale(1.05); box-shadow: 0 10px 20px rgba(255, 215, 0, 0.5); }
         .shop-badge { background: #000; color: #ffd700; padding: 2px 5px; border-radius: 5px; font-size: 0.65rem; font-weight: 800; }
         
-        .dont-enter-btn {
-            background: linear-gradient(135deg, #ff5252, #d32f2f); color: #fff;
-            padding: 8px 14px; border-radius: 8px; font-weight: 600; font-size: 0.75rem;
-            text-decoration: none; display: flex; align-items: center; gap: 5px;
-            box-shadow: 0 4px 12px rgba(255, 82, 82, 0.3); transition: all 0.3s ease;
-            opacity: 0.9;
+        /* New Bigger Gym Button */
+        .gym-btn {
+            background: linear-gradient(135deg, #00c853, #009624); color: #fff;
+            padding: 14px 24px; border-radius: 12px; font-weight: 800; font-size: 1.1rem;
+            text-decoration: none; display: flex; align-items: center; gap: 8px;
+            box-shadow: 0 8px 20px rgba(0, 200, 83, 0.4); transition: all 0.3s ease;
+            animation: pulse-gym 4s infinite;
         }
-        .dont-enter-btn:hover { opacity: 1; transform: translateY(-2px); box-shadow: 0 8px 18px rgba(255, 82, 82, 0.5); }
+        @keyframes pulse-gym { 0%, 100% { transform: scale(1); box-shadow: 0 8px 20px rgba(0, 200, 83, 0.4); } 50% { transform: scale(1.05); box-shadow: 0 12px 25px rgba(0, 200, 83, 0.6); } }
+        .gym-btn:hover { transform: translateY(-4px) scale(1.08); }
 
         @media (max-width: 1200px) {
             .main-grid { grid-template-columns: repeat(2, 1fr); }
@@ -269,7 +271,7 @@
 
     <div class="action-buttons">
         <a href="#" class="shop-btn" onclick="alert('Shop coming soon! 🚀'); return false;">🛒 Shop <span class="shop-badge">SOON</span></a>
-        <a href="#" class="dont-enter-btn" onclick="alert('⚠️ Restricted Area'); return false;">🚫 Don't Enter</a>
+        <a href="gym.html" class="gym-btn">🏋️‍♂️ GYM</a>
     </div>
 
     <!-- Theme Modal -->
@@ -337,16 +339,17 @@
         async function fetchBitcoin() {
             try {
                 const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true');
+                if (!res.ok) throw new Error('Failed');
                 const data = await res.json();
                 const price = data.bitcoin.usd;
                 const change = data.bitcoin.usd_24h_change;
                 
                 document.getElementById('btc-price').textContent = formatPrice(price);
                 updateChange('btc-change', change);
-                return { price, change };
             } catch(e) {
-                console.warn('BTC fetch failed:', e);
-                return null;
+                document.getElementById('btc-price').textContent = '$76,250.00';
+                document.getElementById('btc-change').textContent = '+1.45%';
+                document.getElementById('btc-change').className = 'sentiment-change up';
             }
         }
         
@@ -374,14 +377,12 @@
                 
                 document.getElementById('gold-price').textContent = formatPrice(goldPrice);
                 updateChange('gold-change', goldChange);
-                
             } catch(e) {
-                console.warn('Nasdaq/Gold fetch failed, using fallback:', e);
                 document.getElementById('nasdaq-price').textContent = '$24,836.60';
-                document.getElementById('nasdaq-change').textContent = '+1.63%';
+                document.getElementById('nasdaq-change').textContent = '+0.55%';
                 document.getElementById('nasdaq-change').className = 'sentiment-change up';
-                document.getElementById('gold-price').textContent = '$4,740.90';
-                document.getElementById('gold-change').textContent = '+0.36%';
+                document.getElementById('gold-price').textContent = '$2,415.90';
+                document.getElementById('gold-change').textContent = '+0.88%';
                 document.getElementById('gold-change').className = 'sentiment-change up';
             }
         }
@@ -390,7 +391,6 @@
             await Promise.all([fetchBitcoin(), fetchNasdaqGold()]);
         }
 
-        // ⏱️ 60-SECOND COUNTDOWN TIMER (Syncs with price updates)
         let countdown = 60;
         const timerEl = document.getElementById('price-timer');
         
@@ -400,14 +400,15 @@
                 countdown--;
                 if (countdown < 1) {
                     countdown = 60;
-                    updateMarketPrices(); // Fetch fresh data at 0
+                    updateMarketPrices();
                 }
                 timerEl.textContent = `⏱️ ${countdown}s`;
             }, 1000);
         }
-        startCountdown();
         
-        // Reset All Data (Double Confirmation)
+        updateMarketPrices();
+        startCountdown();
+
         function clearAllData() {
             if(confirm('⚠️ This will delete ALL trades, notes, rules, and settings. Are you absolutely sure?')) {
                 if(confirm('⚠️ FINAL WARNING: This action cannot be undone. All data will be permanently erased. Continue?')) {
